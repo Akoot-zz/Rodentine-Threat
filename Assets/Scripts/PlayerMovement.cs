@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
@@ -56,7 +55,7 @@ public class PlayerMovement : MonoBehaviour
 
         var horizontalAxis = Input.GetAxis("Horizontal");
 
-        walking = Math.Abs(horizontalAxis) != 0;
+        walking = horizontalAxis != 0;
 
         if (horizontalAxis != 0 && Input.GetButton("Fire3") && !tired)
         {
@@ -106,10 +105,11 @@ public class PlayerMovement : MonoBehaviour
 
         var deltaSpeed = _activeRunMultiplier * runSpeed * Time.deltaTime;
 
-        transform.Translate(Vector2.right * (horizontalAxis * deltaSpeed));
-
-        if (transform.position.y <= 0) // krill zone (underworld)
-            Hurt(0.01F);
+        // rb.AddForce(Vector2.left * (horizontalAxis * deltaSpeed), ForceMode2D.Force);
+        // transform.Translate(Vector2.right * (horizontalAxis * deltaSpeed));
+        rb.velocity = new Vector2(horizontalAxis * deltaSpeed, rb.velocity.y);
+        // if (transform.position.y <= 0) // krill zone (underworld)
+        //     Hurt(0.01F);
 
         if (health <= 0) Kill();
     }
