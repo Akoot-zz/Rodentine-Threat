@@ -8,9 +8,10 @@ public class EntityLiving : MonoBehaviour
     public bool onGround;
     public float health = 1;
     public LayerMask groundLayer;
-    public float radius;
 
     public bool walking;
+    public float jumpHeight = 8;
+    public float runSpeed = 5;
 
     protected void Start()
     {
@@ -26,7 +27,7 @@ public class EntityLiving : MonoBehaviour
         if (health < 0) health = 0;
         if (health > 1) health = 1;
 
-        onGround = Physics2D.OverlapCircle(feet.position, box.size.x / 2, groundLayer);
+        onGround = Physics2D.OverlapCircle(feet.position, 0.5F, groundLayer);
 
         walking = rb.velocity.x != 0;
     }
@@ -41,5 +42,11 @@ public class EntityLiving : MonoBehaviour
     {
         // transform.position = new Vector2(0,1); // spawn him back in!!!
         health = 1;
+    }
+
+    protected void Jump()
+    {
+        rb.velocity = new Vector2(rb.velocity.x, 0);
+        rb.AddForce(Vector2.up * jumpHeight, ForceMode2D.Impulse);
     }
 }
