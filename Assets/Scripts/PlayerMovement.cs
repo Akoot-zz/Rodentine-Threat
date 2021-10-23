@@ -33,22 +33,16 @@ public class PlayerMovement : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
+        // very cool N jump formula (do not steal)
         if (!Input.GetButtonDown("Jump") || !onGround && _jumpsLeft <= 1) return;
-        var jumpCut = totalJumpsPossible - _jumpsLeft + 1;
 
         rb.velocity = new Vector2(rb.velocity.x, 0);
-        rb.AddForce(Vector2.up * (jumpHeight / jumpCut), ForceMode2D.Impulse);
+        rb.AddForce(Vector2.up * (jumpHeight / (totalJumpsPossible - _jumpsLeft + 1)), ForceMode2D.Impulse);
 
         _jumpsLeft--;
 
         stamina -= sprinting ? 0.05F : 0;
     }
-
-    // private void FixedUpdate()
-    // {
-    //     var movement = new Vector2(Input.GetAxis("Horizontal") * runSpeed, rb.velocity.y);
-    //     rb.velocity = movement;
-    // }
 
     private void FixedUpdate()
     {
@@ -117,7 +111,7 @@ public class PlayerMovement : MonoBehaviour
         if (transform.position.y <= 0) // krill zone (underworld)
             Hurt(0.01F);
 
-        if (health <= 0) Die();
+        if (health <= 0) Kill();
     }
 
     public void Hurt(float amount)
@@ -125,9 +119,9 @@ public class PlayerMovement : MonoBehaviour
         health -= amount;
     }
 
-    public void Die()
+    public void Kill()
     {
-        // transform.position = new Vector2(0,1);
+        // transform.position = new Vector2(0,1); // spawn him back in!!!
         health = 1;
     }
 }
