@@ -1,41 +1,31 @@
-using System;
 using UnityEngine;
 
-public class PlayerMovement : MonoBehaviour
+public class PlayerMovement : EntityLiving
 {
-    public float jumpHeight = 8;
     public int totalJumpsPossible = 2;
 
-    public float runSpeed = 5;
     public float runMultiplier = 2;
-    public Rigidbody2D rb;
-    public bool onGround;
 
-    public float health;
     public float stamina;
 
     public bool tired;
     public bool sprinting;
-    public bool movingHorizontally;
-    public bool walking;
 
-    public float walkingThreshold = .5f;
-
-    public LayerMask groundLayer;
-    public Transform feet;
 
     private float _activeRunMultiplier;
     private int _jumpsLeft;
 
     // Start is called before the first frame update
-    private void Start()
+    protected new void Start()
     {
+        base.Start();
         _jumpsLeft = totalJumpsPossible;
     }
 
     // Update is called once per frame
-    private void Update()
+    protected new void Update()
     {
+        base.Update();
         // very cool N jump formula (do not steal)
         if (!Input.GetButtonDown("Jump") || !onGround && _jumpsLeft <= 1) return;
 
@@ -47,22 +37,16 @@ public class PlayerMovement : MonoBehaviour
         stamina -= sprinting ? 0.05F : 0;
     }
 
-    private void FixedUpdate()
+    private new void FixedUpdate()
     {
-        if (health < 0) health = 0;
+        base.FixedUpdate();
+
         if (stamina < 0) stamina = 0;
-        if (health > 1) health = 1;
         if (stamina > 1) stamina = 1;
 
-        onGround = Physics2D.OverlapCircle(feet.position, 0.5F, groundLayer);
         if (onGround) _jumpsLeft = totalJumpsPossible;
 
         var horizontalAxis = Input.GetAxis("Horizontal");
-
-        var currentVelocity = rb.velocity;
-
-        movingHorizontally = currentVelocity.x != 0;
-        walking = Math.Abs(currentVelocity.x) >= walkingThreshold;
 
         if (horizontalAxis != 0 && Input.GetButton("Fire3") && !tired)
         {
@@ -117,18 +101,16 @@ public class PlayerMovement : MonoBehaviour
         rb.velocity = new Vector2(horizontalAxis * deltaSpeed, rb.velocity.y);
         // if (transform.position.y <= 0) // krill zone (underworld)
         //     Hurt(0.01F);
-
-        if (health <= 0) Kill();
     }
 
-    public void Hurt(float amount)
+    public new void Hurt(float amount)
     {
-        health -= amount;
+        base.Hurt(amount);
     }
 
-    public void Kill()
+    public new void Kill()
     {
+        base.Kill();
         // transform.position = new Vector2(0,1); // spawn him back in!!!
-        health = 1;
     }
 }

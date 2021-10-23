@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class EntityLiving : MonoBehaviour
@@ -12,6 +13,9 @@ public class EntityLiving : MonoBehaviour
     public bool walking;
     public float jumpHeight = 8;
     public float runSpeed = 5;
+
+    public bool movingHorizontally;
+    public float walkingThreshold = .5f;
 
     protected void Start()
     {
@@ -29,7 +33,11 @@ public class EntityLiving : MonoBehaviour
 
         onGround = Physics2D.OverlapCircle(feet.position, 0.5F, groundLayer);
 
-        walking = rb.velocity.x != 0;
+        var currentVelocity = rb.velocity;
+
+        movingHorizontally = currentVelocity.x != 0;
+
+        walking = Math.Abs(currentVelocity.x) >= walkingThreshold;
     }
 
     public void Hurt(float amount)
