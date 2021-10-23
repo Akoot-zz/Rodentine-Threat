@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
@@ -15,7 +16,10 @@ public class PlayerMovement : MonoBehaviour
 
     public bool tired;
     public bool sprinting;
+    public bool movingHorizontally;
     public bool walking;
+
+    public float walkingThreshold = .5f;
 
     public LayerMask groundLayer;
     public Transform feet;
@@ -55,7 +59,10 @@ public class PlayerMovement : MonoBehaviour
 
         var horizontalAxis = Input.GetAxis("Horizontal");
 
-        walking = horizontalAxis != 0;
+        var currentVelocity = rb.velocity;
+
+        movingHorizontally = currentVelocity.x != 0;
+        walking = Math.Abs(currentVelocity.x) >= walkingThreshold;
 
         if (horizontalAxis != 0 && Input.GetButton("Fire3") && !tired)
         {
