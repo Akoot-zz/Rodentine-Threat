@@ -11,6 +11,12 @@ public class PlayerMovement : EntityLiving
     public bool tired;
     public bool sprinting;
 
+    public bool blocking;
+
+    public int facing = 1;
+
+    public Rigidbody2D deflector;
+
 
     private float _activeRunMultiplier;
     private int _jumpsLeft;
@@ -26,6 +32,19 @@ public class PlayerMovement : EntityLiving
     protected new void Update()
     {
         base.Update();
+
+        // blocking = Input.GetButtonDown("Fire1");
+        blocking = Input.GetAxisRaw("Fire1") > 0;
+        if (blocking) // LOL
+        {
+            var position = rb.position;
+            deflector.position = new Vector2(position.x - 0.9f, position.y);
+        }
+        else
+        {
+            deflector.position = new Vector2(10000, 10000);
+        }
+
         // very cool N jump formula (do not steal)
         if (!Input.GetButtonDown("Jump") || !onGround && _jumpsLeft <= 1) return;
 
@@ -47,6 +66,9 @@ public class PlayerMovement : EntityLiving
         if (onGround) _jumpsLeft = totalJumpsPossible;
 
         var horizontalAxis = Input.GetAxis("Horizontal");
+
+        var currentVelocity = rb.velocity;
+        facing = currentVelocity.x > 0 ? 1 : -1;
 
         if (horizontalAxis != 0 && Input.GetButton("Fire3") && !tired)
         {
