@@ -3,15 +3,16 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
-    public float jumpHeight;
+    public float jumpHeight = 8;
+    public int totalJumpsPossible = 2;
 
-    public float runSpeed = 5f;
-    public float runMultiplier = 2f;
+    public float runSpeed = 5;
+    public float runMultiplier = 2;
     public Rigidbody2D rb;
-    public bool onGround = true;
+    public bool onGround;
 
-    public float health = 1f;
-    public float stamina = 1f;
+    public float health;
+    public float stamina;
 
     public bool tired;
     public bool sprinting;
@@ -21,19 +22,24 @@ public class PlayerMovement : MonoBehaviour
     public Transform feet;
 
     private float _activeRunMultiplier;
+    private int _jumpsLeft;
 
     // Start is called before the first frame update
     private void Start()
     {
+        _jumpsLeft = totalJumpsPossible;
     }
 
     // Update is called once per frame
     private void Update()
     {
-        if (!Input.GetButtonDown("Jump") || !onGround) return;
+        if (!Input.GetButtonDown("Jump") || !onGround && _jumpsLeft <= 1) return;
+        var jumpCut = totalJumpsPossible - _jumpsLeft + 1;
 
-        rb.AddForce(Vector2.up * jumpHeight, ForceMode2D.Impulse);
-        onGround = false;
+        rb.velocity = new Vector2(rb.velocity.x, 0);
+        rb.AddForce(Vector2.up * (jumpHeight / jumpCut), ForceMode2D.Impulse);
+
+        _jumpsLeft--;
 
         stamina -= sprinting ? 0.05F : 0;
     }
@@ -52,6 +58,7 @@ public class PlayerMovement : MonoBehaviour
         if (stamina > 1) stamina = 1;
 
         onGround = Physics2D.OverlapCircle(feet.position, 0.5F, groundLayer);
+        if (onGround) _jumpsLeft = totalJumpsPossible;
 
         var horizontalAxis = Input.GetAxis("Horizontal");
 
